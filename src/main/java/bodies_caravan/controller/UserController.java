@@ -35,9 +35,7 @@ public class UserController {
         var userFiltred = userInfo.stream().filter( user -> user.getIdUser().equals(id))
                 .findFirst();
         System.out.println("Buscando usuário " + id);
-        if(userFiltred.isEmpty())
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(userFiltred.get());
+        return userFiltred.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 
