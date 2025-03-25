@@ -24,7 +24,7 @@ public class SearchHistoryController {
 
     @GetMapping("/history/{id}")
     public SearchHistory getUniqueSearchHistory(@PathVariable Long id){
-        log.info("Buscando Histporico " + id);
+        log.info("Buscando Histórico " + id);
         return getSearchHistory(id);
     }
 
