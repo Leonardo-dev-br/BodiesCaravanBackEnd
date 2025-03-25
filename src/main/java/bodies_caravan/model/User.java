@@ -1,4 +1,4 @@
-package asteroids_caravan.model;
+package bodies_caravan.model;
 
 import java.util.Date;
 
@@ -48,4 +48,15 @@ public class User {
         this.password = password;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "idUser=" + idUser +
+                ", name='" + name + '\'' +
+                ", LastName='" + LastName + '\'' +
+                ", birthday=" + birthday +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

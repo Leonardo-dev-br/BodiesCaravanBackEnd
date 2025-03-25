@@ -1,4 +1,4 @@
-package asteroids_caravan.model;
+package bodies_caravan.model;
 
 import java.time.LocalDate;
 
@@ -19,6 +19,12 @@ public class SearchHistory {
     public void setSurveyDay(LocalDate surveyDay) {
         this.surveyDay = surveyDay;
     }
-    
 
+    @Override
+    public String toString() {
+        return "SearchHistory{" +
+                "idSearchHistory=" + idSearchHistory +
+                ", surveyDay=" + surveyDay +
+                '}';
+    }
 }
