@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class UserController {
         return userFiltred.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-
+    @JsonFormat(pattern = "yyyy/MM/dd")
     @PostMapping("/user")
     public ResponseEntity create(@RequestBody User user){
         userInfo.add(user);

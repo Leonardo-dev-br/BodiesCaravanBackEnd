@@ -1,13 +1,14 @@
 package bodies_caravan.model;
 
-import java.util.Date;
+import java.time.LocalDate;
+
 
 public class User {
 
     private Long idUser;
     private String name;
     private String LastName;
-    private Date birthday;
+    private LocalDate birthday;
     private String email;
     private String password;
     
@@ -29,10 +30,10 @@ public class User {
     public void setLastName(String lastName) {
         LastName = lastName;
     }
-    public Date getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
     public String getEmail() {
