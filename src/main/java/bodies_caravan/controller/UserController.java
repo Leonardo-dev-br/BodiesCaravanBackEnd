@@ -64,9 +64,6 @@ public class UserController {
     public ResponseEntity<User> updateUserInfo(@PathVariable Long id, @RequestBody User user) {
         log.info("Atualizando informações do usuário com ID: " + id);
 
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
-
         user.setIdUser(id);
         userRepository.save(user);
 
