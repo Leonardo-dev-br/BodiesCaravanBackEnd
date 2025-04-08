@@ -1,63 +1,44 @@
 package bodies_caravan.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
-
+@Entity
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idUser;
-    private String name;
-    private String LastName;
-    private LocalDate birthday;
-    private String email;
-    private String password;
-    
-    public Long getIdUser() {
-        return idUser;
-    }
-    public void setIdUser(Long idUser) {
-        this.idUser = idUser;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getLastName() {
-        return LastName;
-    }
-    public void setLastName(String lastName) {
-        LastName = lastName;
-    }
-    public LocalDate getBirthday() {
-        return birthday;
-    }
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public String getPassword() {
-        return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "idUser=" + idUser +
-                ", name='" + name + '\'' +
-                ", LastName='" + LastName + '\'' +
-                ", birthday=" + birthday +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
+    @NotBlank(message = "Nome é obrigatório")
+    private String name;
+
+    @NotBlank(message = "Sobrenome é obrigatório")
+    private String lastName;
+
+    @PastOrPresent(message = "A data de nascimento deve ser no passado ou presente")
+    private LocalDate birthday;
+
+    @Email(message = "O e-mail deve ser válido")
+    @NotBlank(message = "E-mail é obrigatório")
+    private String email;
+
+    @NotBlank(message = "Senha é obrigatória")
+    private String password;
 }

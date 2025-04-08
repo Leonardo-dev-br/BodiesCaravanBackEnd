@@ -1,76 +1,93 @@
 package bodies_caravan.controller;
 
-import bodies_caravan.model.User;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.StringMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import java.util.ArrayList;
-import java.util.List;
-
+import bodies_caravan.model.User;
+import bodies_caravan.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@RequestMapping("/users")
+@Slf4j
 public class UserController {
-    private Logger log = LoggerFactory.getLogger(getClass());
-    private  List<User> userInfo = new ArrayList<>();
 
-    @GetMapping("/userProfile")
-    public List<User> index(){
-        return userInfo;
+    @Autowired
+    private UserRepository userRepository;
+
+    @GetMapping
+    public List<User> getUsers(UserFilter filter) {
+        var probe = User.builder()
+                .name(filter.name)
+                .email(filter.email)
+                .build();
+
+        var matcher = ExampleMatcher.matchingAll()
+                .withIgnoreCase()
+                .withIgnoreNullValues()
+                .withStringMatcher(StringMatcher.CONTAINING);
+
+        var example = Example.of(probe, matcher);
+
+        return userRepository.findAll(example);
     }
 
-    @GetMapping("/user/{id}")
-    public ResponseEntity<User> getUniqueUser(@PathVariable Long id){
-        var userFiltred = userInfo.stream().filter( user -> user.getIdUser().equals(id))
-                .findFirst();
-        System.out.println("Buscando usuário " + id);
-        return userFiltred.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/userProfile/{id}")
+    public ResponseEntity<User> getUniqueUser(@PathVariable Long id) {
+        var userFiltered = userRepository.findById(id);
+        return userFiltered.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @JsonFormat(pattern = "yyyy/MM/dd")
-    @PostMapping("/user")
-    public ResponseEntity create(@RequestBody User user){
-        userInfo.add(user);
-        System.out.println("Usuário cadastrado " + user);
+    @PostMapping
+    public ResponseEntity<User> create(@RequestBody User user) {
+        userRepository.save(user);
         return ResponseEntity.status(201).body(user);
     }
 
     @PutMapping("{id}")
-    public User updateUserInfo(@PathVariable Long id, @RequestBody User user) {
-        log.info("Atualizando conta de: " + id + " " + user);
+    public ResponseEntity<User> updateUserInfo(@PathVariable Long id, @RequestBody User user) {
+        log.info("Atualizando informações do usuário com ID: " + id);
 
-        userInfo.remove(getUserInfo(id));
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
         user.setIdUser(id);
-        userInfo.add(user);
+        userRepository.save(user);
 
-        return user;
+        return ResponseEntity.ok(user);
     }
 
-    @DeleteMapping("user/{id}")
+    @DeleteMapping("/user/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id){
-        log.info("Processando o Deletar do usu[ario de ID: " + id);
-        userInfo.remove(id);
+    public void delete(@PathVariable Long id) {
+        log.info("Processando a exclusão do usuário de ID: " + id);
+        userRepository.delete(getUserRepository(id));
     }
 
-    private User getUserInfo(Long id) {
-        return userInfo.stream()
-                .filter(us -> us.getIdUser().equals(id))
-                .findFirst()
+    record UserFilter(String name, String email) {
+    }
+
+    private User getUserRepository(Long id) {
+        return userRepository
+                .findById(id)
                 .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Informações do Usuário  " + id + "  não encontradas")
-                );
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "Histórico de Busca do Usuário  " + id + "  não encontrados"));
     }
 }
